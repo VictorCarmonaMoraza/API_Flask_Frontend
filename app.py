@@ -1,6 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, url_for
 from flask_migrate import Migrate
-
+from werkzeug.utils import redirect
 
 from database import db
 from forms import PersonaForm
@@ -55,4 +55,17 @@ def agregar():
     #Instanciamos la clase Persona
     persona = Persona()
     personaForm = PersonaForm(obj = persona)
+    #preguntamos si nuestro metodo es de tipo post
+    if request.method == 'POST':
+        # Preguntamos si el formulario es valido
+        if personaForm.validate_on_submit():
+            #Rellenamos el objeto persona
+            personaForm.populate_obj(persona)
+            app.logger.debug(f'Persona a insertar: {persona}')
+            #Insertamos el nuevo registro
+            db.session.add(persona)
+            #Hacemos commit de la transaccion
+            db.session.commit()
+            #Redireccionamos a la pagina
+            return redirect(url_for('inicio'))
     return render_template('agregar.html', forma = personaForm)
