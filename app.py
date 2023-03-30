@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 
 
 from database import db
+from forms import PersonaForm
 from models import Persona
 
 app = Flask(__name__)
@@ -26,11 +27,6 @@ migrate.init_app(app, db)
 
 #configuracion de flask-wtf
 app.config['SECRET_KEY']='llave_secreta'
-
-
-
-
-
 
 @app.route('/')
 @app.route('/index')
@@ -58,3 +54,5 @@ def ver_detalle(id):
 def agregar():
     #Instanciamos la clase Persona
     persona = Persona()
+    personaForm = PersonaForm(obj = persona)
+    return render_template('agregar.html', forma = personaForm)
