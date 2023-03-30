@@ -1,9 +1,9 @@
 from flask import Flask, render_template
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
+
+
+from database import db
+from models import Persona
 
 app = Flask(__name__)
 
@@ -18,8 +18,7 @@ FULL_URL_DB =f'postgresql://{USER_BD}:{PASS_DB}@{URL_DB}/{NAME_DB}'
 app.config['SQLALCHEMY_DATABASE_URI'] = FULL_URL_DB
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
-#Inicializazcion del objeto db de sqlalchemy
-db =SQLAlchemy(app)
+db.init_app(app)
 
 #configurar_flask-migrate
 migrate = Migrate()
@@ -29,30 +28,9 @@ migrate.init_app(app, db)
 app.config['SECRET_KEY']='llave_secreta'
 
 
-class Persona(db.Model):
-    #Definimos las columnas indicando el tipo de dato
-    id = db.Column(db.Integer, primary_key =True)
-    nombre = db.Column(db.String(250))
-    apellido = db.Column(db.String(250))
-    email = db.Column(db.String(250))
 
 
-    def __str__(self):
-        return (
-            f'Id: {self.id}'
-            f'Nombre: {self.nombre}'
-            f'Apellido: {self.apellido}'
-            f'Email: {self.email}'
-        )
 
-
-class PersonaForm(FlaskForm):
-    #Campo requerido
-    nombre = StringField('Nombre',validators =[DataRequired()])
-    #Campo opcional
-    apellido = StringField('Apellido')
-    email = StringField('Email',validators =[DataRequired()])
-    enviar = SubmitField('Enviar')
 
 @app.route('/')
 @app.route('/index')
