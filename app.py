@@ -1,6 +1,9 @@
 from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 
 app = Flask(__name__)
 
@@ -22,6 +25,9 @@ db =SQLAlchemy(app)
 migrate = Migrate()
 migrate.init_app(app, db)
 
+#configuracion de flask-wtf
+app.config['SECRET_KEY']='llave_secreta'
+
 
 class Persona(db.Model):
     #Definimos las columnas indicando el tipo de dato
@@ -40,7 +46,13 @@ class Persona(db.Model):
         )
 
 
-
+class PersonaForm(FlaskForm):
+    #Campo requerido
+    nombre = StringField('Nombre',validators =[DataRequired()])
+    #Campo opcional
+    apellido = StringField('Apellido')
+    email = StringField('Email',validators =[DataRequired()])
+    enviar = SubmitField('Enviar')
 
 @app.route('/')
 @app.route('/index')
@@ -63,3 +75,8 @@ def ver_detalle(id):
     persona = Persona.query.get_or_404(id)
     app.logger.debug(f'Ver persona: {persona}')
     return render_template('detalle.html', personaVerDetalle =persona)
+
+@app.route('/agregar', methods =['GET','POST'])
+def agregar():
+    #Instanciamos la clase Persona
+    persona = Persona()
