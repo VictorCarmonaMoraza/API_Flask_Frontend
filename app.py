@@ -76,4 +76,15 @@ def editar(id):
     persona = Persona.query.get_or_404(id)
     #Muestra la informaciuon recuperada de la base de datos
     personaForma = PersonaForm(obj=persona)
+    #Comporbamos si la peticion es de tipo Post
+    if request.method == 'POST':
+        #Validamos cuando se ha hecho submit del formulario
+        if personaForma.validate_on_submit():
+            #Recuperamos los valores del formulario y lo pasamos a nuestro objeto persona
+            personaForma.populate_obj(persona)
+            app.logger.debug(f'Persona a actualizar: {persona}')
+            #Como estamos en una transaccion no hace falta hacer update solo hacer commit
+            db.session.commit()
+            #Redireccionamos a nuestra pagina de inicio
+            return redirect(url_for('inicio'))
     return render_template('editar.html', forma = personaForma)
