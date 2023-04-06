@@ -69,3 +69,11 @@ def agregar():
             #Redireccionamos a la pagina
             return redirect(url_for('inicio'))
     return render_template('agregar.html', forma = personaForm)
+
+@app.route('/editar/<int:id>', methods =['GET','POST'])
+def editar(id):
+    #Recuperamos el objeto persona a editar de la base de datos
+    persona = Persona.query.get_or_404(id)
+    #Muestra la informaciuon recuperada de la base de datos
+    personaForma = PersonaForm(obj=persona)
+    return render_template('editar.html', forma = personaForma)
